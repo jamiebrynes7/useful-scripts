@@ -31,4 +31,4 @@ while not valid:
     valid = True
     branch = branches[int(selected.replace(" ", "")) - 1]
     p = Popen(["git", "checkout", branch])
-p.communicate()
+    p.communicate()
