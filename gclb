@@ -1,0 +1,33 @@
+#!/usr/bin/python3
+from subprocess import Popen, PIPE
+
+p = Popen(["git", "branch", "--merged", "master"], stdout=PIPE, stderr=PIPE)
+output, err = p.communicate()
+if p.returncode != 0:
+    print("Error: Not a git directory.")
+    exit(1)
+output = output.decode()
+branches = sorted(filter(None, output.replace(" ", "").replace("*","").split("\n")))
+# Remove master branch
+branches.remove("master")
+
+if branches == []:
+    print("No branches to delete!")
+    exit(0)
+
+print("This will delete the following branches:")
+for branch in branches:
+    print(" * " + branch)
+
+user_confirm = input("\nEnter Y to confirm: ")
+
+if not user_confirm.lower().replace(" ", "") == "y":
+    print("Aborting operation!")
+    exit(1)
+
+for branch in branches:
+    print("Deleting " + branch + "...")
+    p = Popen(["git", "branch", "-D", branch], stdout=PIPE, stderr=PIPE)
+    output, err = p.communicate()
+    if p.returncode != 0:
+        print("Failed to delete: " + branch)

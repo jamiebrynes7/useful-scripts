@@ -1,0 +1,34 @@
+#!/usr/bin/python3
+from subprocess import Popen, PIPE
+
+p = Popen(["git", "branch", "-l"], stdout=PIPE, stderr=PIPE)
+output, err = p.communicate()
+if p.returncode != 0:
+    print("Error: Not a git directory.")
+    exit(1)
+output = output.decode()
+branches = sorted(filter(None, output.replace(" ", "").replace("*","").split("\n")))
+
+print ("Select a branch: ")
+counter = 1
+for branch in branches:
+    print ("  " + str(counter) + ") " + branch)
+    counter += 1
+
+valid = False
+while not valid:
+
+    selected = input("\n> ")
+    if selected.replace(" ", "") == "q":
+        exit(0)
+    if not selected.replace(" ", "").isdigit():
+        print ("Please enter a valid branch number")
+        continue
+    if int(selected.replace(" ", "")) >= counter:
+        print("Please enter a valid branch number")
+        continue
+    
+    valid = True
+    branch = branches[int(selected.replace(" ", "")) - 1]
+    p = Popen(["git", "checkout", branch])
+p.communicate()
